@@ -126,7 +126,9 @@
 					        .style("fill",'none')
 
 		       			d3.select("#date").on("input", function() {
+
 						d3.select("#vPath").remove();
+						
 						var dateIn = this.value;
 						// console.log('dateIn')
 						// console.log(vID);
