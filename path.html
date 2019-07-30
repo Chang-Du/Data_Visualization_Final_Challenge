@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style type="text/css">
+
+  			.geojson {
+			 fill: none;
+			 stroke: red;
+			 stroke-width: 5;
+			}
+
+			.line {
+				fill: none;
+				stroke: grey;
+				stroke-width: 0.5;
+			}
+			h1	{
+				color: #ffffff; font-family: arial, sans-serif;
+				font-size: 62px; font-weight: 800; line-height: 72px; 
+				margin: 0 0 24px; text-align: center; text-transform: uppercase;
+				background-color: steelblue
+			}
+			p {color:black;font-family: arial, sans-serif;font-size: 20px;text-align: center;margin: 0 0 24px }
+		
+			#distArea {margin-left:100px;
+			           margin-top:50px;
+					   margin-bottom:10px;}
+			h4 {
+			color: grey;
+			margin-left : 60px;
+			text-transform:uppercase;
+			}
+			
+			
+			
+  </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+		  <h2 align="center">Vehicle Path</h2>
+
+		   </div>	 
+			
+	  </div>
+
+	  <div class="row">
+			  <div class="container col-sm-6" id="distArea">
+			  <h4 align="center">Vehicle ID
+			  <input type="text" id="vehicleID" name="vehicleID"
+			  			align="center"></h4>
+	  <h4 align="center">Select Date
+	  <input type="date" id="date" name="date"
+	  				value = '2013-10-06' min = '2013-10-05' max='2013-10-06'
+					   align="center"></h4>
+	<!-- <h4 align="center">Start Hour</h4>			   
+	<input type="range" id="start" name="start" min=0 max=24>
+	<h4 align="center">End Hour</h4>			   
+	<input type="range" id="end" name="end" min=0 max=24> -->
+      </div>
+	  </div>
+<!-- 	   <div class="row">
+			  <div class="col-sm-5" id="distArea">
+
+			
+	  </div> -->
+	  
+	  
+	  </div>
+	  
+<script type="text/javascript">
+
+			// var dateCoverter = function(d) {
+				// return {
+					// date: d.date,  //Make a new Date object for each year + month
+					// endhour: parseFloat(d.properties.endhour)
+					// starthour: parseFloat(d.properties.starthour),
+					// Vehicle_ID//Convert from string to float
+				// };
+			// }
+
+			var projection = d3.geoMercator()
+			var path = d3.geoPath()
+							 .projection(projection)
+
+			d3.json("https://raw.githubusercontent.com/Mingyi1995/Data_Viz_Final_Challenge/master/data/test.json", function(err, geojson) {
+					var width = 1200;
+					var height = 600;
+
+					var svg = d3.select("#distArea")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height)
+						.attr("class","Area")
+						.style('align','center')
+						;
+
+			      	projection.fitSize([width,height],geojson); // adjust the projection to the features
+			      
+			      svg.append("path")
+			      	.attr("d", path(geojson))
+			      	.style("stroke", "gray")
+					.style("stroke-width", 0.25)
+					.style('fill','none'); // draw the features
+
+					svg.exit().remove()
+
+
+					d3.select("#vehicleID").on("input", function() {
+					     d3.select("#vPath").remove();
+					     var vID = this.value;
+					     d3.json("https://raw.githubusercontent.com/Mingyi1995/Data_Viz_Final_Challenge/master/data/path.json", function(err, geojson2) {
+					      var data = geojson2['features'];
+					      var dataset = data.filter(function(d) {return d['properties']["Vehicle_ID"] == vID;});
+					                        
+					      g = d3.select("svg").append("g")
+
+					      g
+					      	.data(data)
+	                        .append("path")
+	                        .attr("id", "vPath")
+					        .attr("d", path)
+					        .style("stroke", "orange")
+					        .style("stroke-width", "1")
+					        .style("fill",'none')
+
+		       			d3.select("#date").on("input", function() {
+						d3.select("#vPath").remove();
+						var dateIn = this.value;
+						// console.log('dateIn')
+						// console.log(vID);
+						// d3.json("https://raw.githubusercontent.com/Mingyi1995/Data_Viz_Final_Challenge/master/data/test.json", function(err, geojson2) {
+							// var data = geojson2['features'];
+						var dataset = data.filter(function(d) {return (d['properties']["date"] == dateIn)&&(d['properties']["Vehicle_ID"] == vID);});
+						// console.log(dataset)
+		         
+					      g = d3.select("svg").append("g")
+
+					      g
+					      	.data(dataset)
+		                    .append("path")
+		                    .attr("id", "vPath")
+					        .attr("d", path)
+					        .style("stroke", "red")
+					        .style("stroke-width", "2")
+					        .style("fill",'none')
+			// 					    d3.select("#start").on("input", function() {
+			// 				d3.select("#vPath").remove();
+			// 				var starttime = this.value;
+			// 				console.log(starttime);
+			// 				d3.json("https://dl.dropboxusercontent.com/s/jjghiah71emgovn/hourpath.json?dl=1", function(err, geojson2) {
+
+			// 				var data = geojson2['features'];
+			// 				var dataset = data.filter(function(d) {return (d['properties']["strathour"] >= starttime)&&(d['properties']["date"] == dateIn)&&(d['properties']["Vehicle_ID"] == vID)});
+			// 				console.log(dataset)
+			         
+			// 			      g = d3.select("svg").append("g")
+
+			// 			      g
+			// 			      	.data(dataset)
+			//                     .append("path")
+			//                     .attr("id", "vPath")
+			// 			        .attr("d", path)
+			// 			        .style("stroke", "blue")
+			// 			        .style("stroke-width", "5")
+			// 			        .style("fill",'blue')
+			// })
+
+			// });
+			});
+					        
+					     })
+
+					 
+					     });
+
+
+			});
+			
+			
+			
+			
+		</script>
+</body>
+</html>
