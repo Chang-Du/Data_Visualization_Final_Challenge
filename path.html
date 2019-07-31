@@ -84,7 +84,7 @@
 			var path = d3.geoPath()
 							 .projection(projection)
 
-			d3.json("https://raw.githubusercontent.com/Chang-Du/Data_Visualization_Final_Challenge/master/data/test.json", function(err, geojson) {
+			d3.json("https://raw.githubusercontent.com/Mingyi1995/Data_Viz_Final_Challenge/master/data/test.json", function(err, geojson) {
 					var width = 1200;
 					var height = 600;
 
@@ -110,7 +110,7 @@
 					d3.select("#vehicleID").on("input", function() {
 					     d3.select("#vPath").remove();
 					     var vID = this.value;
-					     d3.json("https://raw.githubusercontent.com/Chang-Du/Data_Visualization_Final_Challenge/master/data/path.json", function(err, geojson2) {
+					     d3.json("https://raw.githubusercontent.com/Mingyi1995/Data_Viz_Final_Challenge/master/data/path.json", function(err, geojson2) {
 					      var data = geojson2['features'];
 					      var dataset = data.filter(function(d) {return d['properties']["Vehicle_ID"] == vID;});
 					                        
@@ -126,7 +126,9 @@
 					        .style("fill",'none')
 
 		       			d3.select("#date").on("input", function() {
+
 						d3.select("#vPath").remove();
+						
 						var dateIn = this.value;
 						// console.log('dateIn')
 						// console.log(vID);
